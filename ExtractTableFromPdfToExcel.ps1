@@ -4,6 +4,15 @@
 $currentDirectory = Get-Location
 $savePath = "$currentDirectory\table_data.xlsx"
 $pdfPath = "$currentDirectory\table.pdf"
+$pdfUrl = "https://www.w3.org/WAI/WCAG21/working-examples/pdf-table/table.pdf"
+
+# 既存のPDFファイルを削除
+if (Test-Path $pdfPath) {
+    Remove-Item $pdfPath
+}
+
+# PDFファイルのダウンロード
+Invoke-WebRequest -Uri $pdfUrl -OutFile $pdfPath
 
 # 既存のExcelファイルを削除
 if (Test-Path $savePath) {
