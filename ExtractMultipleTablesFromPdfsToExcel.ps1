@@ -16,11 +16,9 @@ foreach ($pdfUrl in $pdfUrls) {
     $pdfFilePath = "$currentDirectory\$pdfFileName"
     $excelFilePath = "$currentDirectory\$($pdfFileName -replace '.pdf','.xlsx')"
 
-    if (Test-Path $pdfFilePath) {
-        Remove-Item $pdfFilePath
+    if (-not (Test-Path $pdfFilePath)) {
+        Invoke-WebRequest -Uri $pdfUrl -OutFile $pdfFilePath
     }
-
-    Invoke-WebRequest -Uri $pdfUrl -OutFile $pdfFilePath
 
     if (Test-Path $excelFilePath) {
         Remove-Item $excelFilePath
@@ -75,9 +73,6 @@ in
     [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
     [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
     Remove-Variable excel, workbook, worksheet, listObject, connection
-
-    # ダウンロードしたPDFファイルを削除
-    Remove-Item $pdfFilePath
 
     Write-Output "Excel file created with table data from $pdfFileName at $excelFilePath"
 }
