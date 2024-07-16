@@ -1,65 +1,63 @@
-# PowerShell and Power Query Excel Automation Example Scripts
+# ExtractTablesFromPdf.ps1
 
-This repository contains PowerShell scripts to automate Excel tasks using COM objects and Power Query.
+## Overview
+`ExtractTablesFromPdf.ps1` is a PowerShell script designed to extract tables from a specified PDF file and save them into an Excel workbook. The script uses Power Query to load the tables from the PDF and outputs the data to separate sheets in the Excel file.
 
-## Scripts
-
-### 1. CreateExcelFileWithPowerQuery.ps1
-
-This script creates an Excel file, adds a Power Query to it, and saves the results into a worksheet.
-
-#### Features:
-- Deletes existing Excel file if present
-- Adds Power Query to the workbook
-- Loads Power Query results into the worksheet
-- Saves the new Excel file with the query results
-
-#### Usage:
-```powershell
-# Run the script
-.\CreateExcelFileWithPowerQuery.ps1
-```
-
-#### Example:
-```powershell
-# Example usage:
-.\CreateExcelFileWithPowerQuery.ps1
-# This will create an Excel file with a Power Query that converts numbers 1 to 10 into a table.
-```
-
-### 2. ExtractTableFromPdfToExcel.ps1
-
-This script downloads a PDF file from a specified URL, extracts table data from the PDF using Power Query, and saves the data into an Excel worksheet.
-
-#### Features:
-- Downloads `table.pdf` from a specified URL to the current directory
-- Deletes existing `table.pdf` and `table_data.xlsx` if present
-- Adds Power Query to extract table from the downloaded PDF file
-- Loads extracted table data into an Excel worksheet
-- Saves the new Excel file with the extracted table data
-
-#### Usage:
-```powershell
-# Run the script
-.\ExtractTableFromPdfToExcel.ps1
-```
-
-#### Example:
-```powershell
-# Example usage:
-.\ExtractTableFromPdfToExcel.ps1
-# This will download the table.pdf file, extract table data, and save it into table_data.xlsx.
-```
-
-## Requirements
+## Prerequisites
+- Windows operating system
+- Microsoft Excel installed
 - PowerShell 5.1 or later
-- Excel installed on the system
+
+## Installation
+1. Ensure that Microsoft Excel is installed on your machine.
+2. Download or clone the script to your local machine.
+
+## Usage
+1. Open PowerShell.
+2. Navigate to the directory where `ExtractTablesFromPdf.ps1` is located.
+3. Run the script with the following command:
+
+```powershell
+.\ExtractTablesFromPdf.ps1 -pdfFileName <path_to_pdf_file>
+```
+
+Replace `<path_to_pdf_file>` with the path to your PDF file.
+
+### Example
+```powershell
+.\ExtractTablesFromPdf.ps1 -pdfFileName "C:\Users\YourName\Documents\example.pdf"
+```
+
+## Parameters
+- `-pdfFileName`: The path to the PDF file from which tables will be extracted. This parameter is required.
+
+## Features
+- Extracts tables from a specified PDF file.
+- Saves extracted tables into an Excel workbook with each table in a separate sheet.
+- Provides progress indication during the extraction and saving process.
+
+## Script Details
+- The script resolves the PDF file path to an absolute path.
+- Checks if the specified PDF file exists.
+- Creates a new Excel workbook.
+- Uses Power Query to load tables from the PDF file.
+- Filters table IDs to include only those that start with "Table" followed by digits.
+- Saves each extracted table in a new worksheet within the Excel workbook.
+- Provides progress messages during the refresh operations.
+
+## Error Handling
+- The script checks if the PDF file exists and throws an error if it does not.
+- If an Excel file with the same name as the PDF file already exists, it will be removed before creating a new one.
+
+## Notes
+- Ensure that the PDF file path provided is correct and accessible.
+- The script must be run with appropriate permissions to create and write files in the specified directory.
 
 ## License
-This repository is licensed under the MIT License.
+This script is provided "as is" without warranty of any kind. Use it at your own risk.
 
-## Contributions
-Contributions are welcome! Please fork this repository and submit a pull request for any improvements.
+## Contributing
+If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
 
 ## Authors
-- Takashi Sasaki - [Homepage](https://x.com/TakashiSasaki)
+- Takashi Sasaki
