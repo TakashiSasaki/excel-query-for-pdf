@@ -10,7 +10,7 @@ if (-not $pdfFileName) {
 
 # PDFファイルの絶対パスを指定
 $pdfFilePath = (Resolve-Path $pdfFileName).Path
-$excelFilePath = "$($pdfFilePath -replace '.pdf','.xlsx')"
+$excelFilePath = [System.IO.Path]::ChangeExtension($pdfFilePath, ".xlsx")
 
 if (-not (Test-Path $pdfFilePath)) {
     Write-Error "The specified PDF file does not exist: $pdfFilePath"
@@ -48,7 +48,8 @@ $connectionString = "OLEDB;Provider=Microsoft.Mashup.OleDb.1;Data Source=$Workbo
 $connection = $workbook.Connections.Add2("GetTablesFromPdf Connection", "", $connectionString, $queryFormula, 2)
 $listObject = $workbook.Worksheets.Item(1).ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $workbook.Worksheets.Item(1).Range("A1"))
 $listObject.QueryTable.CommandText = "SELECT Id FROM [GetTablesFromPdf]"
-$listObject.QueryTable.Refresh()
+# 不要な値が表示されないようにするためにダミーの変数 $dummy に代入する
+$dummy = $listObject.QueryTable.Refresh()
 
 # Id列の値を取得して一行に表示
 $idColumnValues = $listObject.Range.Columns.Item(1).Cells | Select-Object -ExpandProperty Value2
@@ -96,7 +97,8 @@ in
     $connection = $workbook.Connections.Add2("ExtractTableFromPdf_$tableId Connection", "", $connectionString, $tableQueryFormula, 2)
     $listObject = $worksheet.ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $worksheet.Range("A1"))
     $listObject.QueryTable.CommandText = "SELECT * FROM [ExtractTableFromPdf_$tableId]"
-    $listObject.QueryTable.Refresh()
+    # 不要な値が表示されないようにするためにダミーの変数 $dummy に代入する
+    $dummy = $listObject.QueryTable.Refresh()
 }
 
 # ファイルの保存
