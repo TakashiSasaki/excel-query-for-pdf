@@ -51,13 +51,9 @@ $listObject = $workbook.Worksheets.Item(1).ListObjects.Add([Microsoft.Office.Int
 $listObject.QueryTable.CommandText = "SELECT Id FROM [GetTablesFromPdf]"
 $listObject.QueryTable.Refresh()
 
-# Id列の値を取得して表示
+# Id列の値を取得して一行に表示
 $idColumnValues = $listObject.Range.Columns.Item(1).Cells | Select-Object -ExpandProperty Value2
-Write-Output "Id column values:"
-# TODO: 次の foreach ループの中での表示は一行ごとに改行せずスペース区切りで連続して一行に表示する。
-foreach ($id in $idColumnValues) {
-    Write-Output $id
-}
+Write-Output "Id column values: $($idColumnValues -join ' ')"
 
 # 'Table'で始まり、そのあとに数字が続く文字列をフィルタリング
 $tableIds = @()
@@ -67,18 +63,15 @@ foreach ($id in $idColumnValues) {
     }
 }
 
-Write-Output "Filtered Table Ids:"
-# TODO: 次の foreach ループの中での表示は一行ごとに改行せずスペース区切りで連続して一行に表示する。
-foreach ($tableId in $tableIds) {
-    Write-Output $tableId
-}
+# フィルタリングされたTable IDを一行に表示
+Write-Output "Filtered Table Ids: $($tableIds -join ' ')"
 
 # クエリテーブルを削除
 $listObject.Delete()
 
 # 各テーブルを新しいシートに追加
 foreach ($tableId in $tableIds) {
-    Write-Output $tableId # 処理中の $tableId が分かるように進捗表示する。
+    Write-Output "Processing table: $tableId"
     $worksheet = $workbook.Worksheets.Add()
     $worksheet.Name = $tableId
 
