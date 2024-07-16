@@ -8,10 +8,9 @@ if (-not $pdfFileName) {
     exit
 }
 
-# カレントディレクトリの取得
-$currentDirectory = Get-Location
-$pdfFilePath = "$currentDirectory\$pdfFileName"
-$excelFilePath = "$currentDirectory\$($pdfFileName -replace '.pdf','.xlsx')"
+# PDFファイルの絶対パスを指定
+$pdfFilePath = (Resolve-Path $pdfFileName).Path
+$excelFilePath = "$($pdfFilePath -replace '.pdf','.xlsx')"
 
 if (-not (Test-Path $pdfFilePath)) {
     Write-Error "The specified PDF file does not exist: $pdfFilePath"
