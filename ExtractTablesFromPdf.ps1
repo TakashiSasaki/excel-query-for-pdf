@@ -48,8 +48,11 @@ $connectionString = "OLEDB;Provider=Microsoft.Mashup.OleDb.1;Data Source=$Workbo
 $connection = $workbook.Connections.Add2("GetTablesFromPdf Connection", "", $connectionString, $queryFormula, 2)
 $listObject = $workbook.Worksheets.Item(1).ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $workbook.Worksheets.Item(1).Range("A1"))
 $listObject.QueryTable.CommandText = "SELECT Id FROM [GetTablesFromPdf]"
-# 不要な値が表示されないようにするためにダミーの変数 $dummy に代入する
+
+# Refresh() の前後に進捗表示を追加する
+Write-Output "Refreshing query table to get table IDs..."
 $dummy = $listObject.QueryTable.Refresh()
+Write-Output "Query table refreshed."
 
 # Id列の値を取得して一行に表示
 $idColumnValues = $listObject.Range.Columns.Item(1).Cells | Select-Object -ExpandProperty Value2
@@ -97,8 +100,11 @@ in
     $connection = $workbook.Connections.Add2("ExtractTableFromPdf_$tableId Connection", "", $connectionString, $tableQueryFormula, 2)
     $listObject = $worksheet.ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $worksheet.Range("A1"))
     $listObject.QueryTable.CommandText = "SELECT * FROM [ExtractTableFromPdf_$tableId]"
-    # 不要な値が表示されないようにするためにダミーの変数 $dummy に代入する
+    
+    # Refresh() の前後に進捗表示を追加する
+    Write-Output "Refreshing query table for $tableId..."
     $dummy = $listObject.QueryTable.Refresh()
+    Write-Output "Query table for $tableId refreshed."
 }
 
 # ファイルの保存
