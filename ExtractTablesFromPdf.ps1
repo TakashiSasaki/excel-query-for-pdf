@@ -1,15 +1,17 @@
 # スクリプト名: ExtractTablesFromPdf.ps1
 param (
-    [string]$pdfFilePath
+    [string]$pdfFileName
 )
 
-if (-not $pdfFilePath) {
-    Write-Error "Please provide the PDF file path as an argument."
+if (-not $pdfFileName) {
+    Write-Error "Please provide the PDF file name as an argument."
     exit
 }
 
-# 出力となるExcelファイルのパスを設定
-$excelFilePath = "$($pdfFilePath -replace '.pdf','.xlsx')"
+# カレントディレクトリの取得
+$currentDirectory = Get-Location
+$pdfFilePath = "$currentDirectory\$pdfFileName"
+$excelFilePath = "$currentDirectory\$($pdfFileName -replace '.pdf','.xlsx')"
 
 if (-not (Test-Path $pdfFilePath)) {
     Write-Error "The specified PDF file does not exist: $pdfFilePath"
@@ -19,9 +21,6 @@ if (-not (Test-Path $pdfFilePath)) {
 if (Test-Path $excelFilePath) {
     Remove-Item $excelFilePath
 }
-
-# PDFファイルの絶対パスを取得
-$pdfFilePath = [System.IO.Path]::GetFullPath($pdfFilePath)
 
 # Excel COMオブジェクトの作成
 $excel = New-Object -ComObject Excel.Application
@@ -49,12 +48,8 @@ $connectionString = "OLEDB;Provider=Microsoft.Mashup.OleDb.1;Data Source=$Workbo
 # クエリテーブルの追加
 $connection = $workbook.Connections.Add2("GetTablesFromPdf Connection", "", $connectionString, $queryFormula, 2)
 $listObject = $workbook.Worksheets.Item(1).ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $workbook.Worksheets.Item(1).Range("A1"))
-
-Write-Output "Starting refresh of table IDs..."
 $listObject.QueryTable.CommandText = "SELECT Id FROM [GetTablesFromPdf]"
-# 変数 $refreshResult は使用しないが、戻り値がコンソールに表示されるのを防ぐために代入する。
-$refreshResult = $listObject.QueryTable.Refresh()
-Write-Output "Completed refresh of table IDs."
+$listObject.QueryTable.Refresh()
 
 # Id列の値を取得して一行に表示
 $idColumnValues = $listObject.Range.Columns.Item(1).Cells | Select-Object -ExpandProperty Value2
@@ -101,11 +96,8 @@ in
     # クエリテーブルの追加
     $connection = $workbook.Connections.Add2("ExtractTableFromPdf_$tableId Connection", "", $connectionString, $tableQueryFormula, 2)
     $listObject = $worksheet.ListObjects.Add([Microsoft.Office.Interop.Excel.XlListObjectSourceType]::xlSrcExternal, $connection, $null, [Microsoft.Office.Interop.Excel.XlYesNoGuess]::xlYes, $worksheet.Range("A1"))
-
-    Write-Output "Starting refresh of table data for $tableId..."
-    # 変数 $refreshResult は使用しないが、戻り値がコンソールに表示されるのを防ぐために代入する。
-    $refreshResult = $listObject.QueryTable.Refresh()
-    Write-Output "Completed refresh of table data for $tableId."
+    $listObject.QueryTable.CommandText = "SELECT * FROM [ExtractTableFromPdf_$tableId]"
+    $listObject.QueryTable.Refresh()
 }
 
 # ファイルの保存
@@ -123,4 +115,4 @@ $excel.Quit()
 [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
 Remove-Variable excel, workbook, worksheet, listObject, connection
 
-Write-Output "Excel file created with table data from $pdfFilePath at $excelFilePath"
+Write-Output "Excel file created with table data from $pdfFileName at $excelFilePath"
