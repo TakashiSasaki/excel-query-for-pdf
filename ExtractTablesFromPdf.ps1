@@ -14,6 +14,20 @@ function Show-Help {
     Write-Output "  -skipVersionCheck : (Optional) Skip PowerShell version and architecture check"
 }
 
+# パラメータ検証
+try {
+    $params = $PSCmdlet.MyInvocation.BoundParameters.Keys
+    foreach ($param in $params) {
+        if ($param -notin @('pdfFileName', 'excelFilePath', 'skipVersionCheck')) {
+            throw "Invalid parameter: $param"
+        }
+    }
+} catch {
+    Write-Error $_
+    Show-Help
+    exit
+}
+
 # PowerShellのバージョン情報を表示
 Write-Output "PowerShell Version: $($PSVersionTable.PSVersion)"
 if ($env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
@@ -102,15 +116,9 @@ foreach ($id in $idColumnValues) {
         $tableIds += $id
     }
 }
+Write-Output "Filtered Table IDs: $($tableIds -join ' ')"
 
-# フィルタリングされたTable IDを一行に表示
-# この表示は必要なので削除しないこと。
-Write-Output "Filtered Table Ids: $($tableIds -join ' ')"
-
-# クエリテーブルを削除
-$listObject.Delete()
-
-# 各テーブルを新しいシートに追加
+# 各テーブルIDに対して処理を追加
 foreach ($tableId in $tableIds) {
     Write-Output "Processing table: $tableId"
     $worksheet = $workbook.Worksheets.Add()
