@@ -1,3 +1,5 @@
+# スクリプトファイル名： HelloWorld.ps1
+
 # カレントディレクトリにExcelファイルを作成
 $excelFileName = "HelloWorld.xlsx"
 $excelFilePath = Join-Path -Path (Get-Location) -ChildPath $excelFileName
@@ -15,7 +17,7 @@ $excelApp.Visible = $false  # Excelを非表示で開く
 $workbook = $excelApp.Workbooks.Add()
 
 # ワークブックを保存
-$workbook.SaveAs([ref] $excelFilePath)
+$workbook.SaveAs($excelFilePath)
 $workbook.Close()
 $excelApp.Quit()
 
