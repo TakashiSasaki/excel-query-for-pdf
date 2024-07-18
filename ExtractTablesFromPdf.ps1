@@ -1,15 +1,17 @@
 # スクリプト名: ExtractTablesFromPdf.ps1
 param (
     [string]$pdfFileName,
-    [string]$excelFilePath
+    [string]$excelFilePath,
+    [switch]$skipVersionCheck
 )
 
 function Show-Help {
-    Write-Output "Usage: .\ExtractTablesFromPdf.ps1 -pdfFileName <PDF file path> [-excelFilePath <Output Excel file path>]"
+    Write-Output "Usage: .\ExtractTablesFromPdf.ps1 -pdfFileName <PDF file path> [-excelFilePath <Output Excel file path>] [-skipVersionCheck]"
     Write-Output ""
     Write-Output "Arguments:"
     Write-Output "  -pdfFileName    : Path to the input PDF file"
     Write-Output "  -excelFilePath  : (Optional) Path to the output Excel file. If not specified, the output file will have the same name as the input file with .xlsx extension"
+    Write-Output "  -skipVersionCheck : (Optional) Skip PowerShell version and architecture check"
 }
 
 # PowerShellのバージョン情報を表示
@@ -18,6 +20,18 @@ if ($env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
     Write-Output "PowerShell is running in 64-bit mode."
 } else {
     Write-Output "PowerShell is running in 32-bit mode."
+}
+
+# PowerShellバージョンとアーキテクチャのチェック
+if (-not $skipVersionCheck) {
+    if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) {
+        Write-Error "This script requires PowerShell version 5.1."
+        exit
+    }
+    if ($env:PROCESSOR_ARCHITECTURE -ne 'x86') {
+        Write-Error "This script requires 32-bit PowerShell."
+        exit
+    }
 }
 
 # 入力パラメータの検証
