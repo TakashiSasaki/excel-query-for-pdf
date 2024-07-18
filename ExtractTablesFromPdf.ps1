@@ -4,6 +4,14 @@ param (
     [string]$excelFilePath
 )
 
+function Show-Help {
+    Write-Output "Usage: .\ExtractTablesFromPdf.ps1 -pdfFileName <PDF file path> [-excelFilePath <Output Excel file path>]"
+    Write-Output ""
+    Write-Output "Arguments:"
+    Write-Output "  -pdfFileName    : Path to the input PDF file"
+    Write-Output "  -excelFilePath  : (Optional) Path to the output Excel file. If not specified, the output file will have the same name as the input file with .xlsx extension"
+}
+
 # PowerShellのバージョン情報を表示
 Write-Output "PowerShell Version: $($PSVersionTable.PSVersion)"
 if ($env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
@@ -12,8 +20,10 @@ if ($env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
     Write-Output "PowerShell is running in 32-bit mode."
 }
 
+# 入力パラメータの検証
 if (-not $pdfFileName) {
     Write-Error "Please provide the PDF file name as an argument."
+    Show-Help
     exit
 }
 
