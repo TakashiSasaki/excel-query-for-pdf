@@ -1,4 +1,15 @@
-# スクリプトファイル名： HelloWorld.ps1
+# Script to create and manipulate an Excel file with PowerQuery using PowerShell
+# This script creates a new Excel file, adds a PowerQuery, and populates a table with data
+
+# Display PowerShell version
+Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+
+# Check if PowerShell is 32-bit or 64-bit
+if ([IntPtr]::Size -eq 4) {
+    Write-Host "PowerShell is running in 32-bit mode"
+} else {
+    Write-Host "PowerShell is running in 64-bit mode"
+}
 
 # カレントディレクトリにExcelファイルを作成
 $excelFileName = "HelloWorld.xlsx"
