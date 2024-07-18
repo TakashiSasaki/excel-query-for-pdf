@@ -1,6 +1,7 @@
 # スクリプト名: ExtractTablesFromPdf.ps1
 param (
-    [string]$pdfFileName
+    [string]$pdfFileName,
+    [string]$excelFilePath
 )
 
 # PowerShellのバージョン情報を表示
@@ -18,7 +19,11 @@ if (-not $pdfFileName) {
 
 # PDFファイルの絶対パスを指定
 $pdfFilePath = (Resolve-Path $pdfFileName).Path
-$excelFilePath = [System.IO.Path]::ChangeExtension($pdfFilePath, ".xlsx")
+
+# 出力先のExcelファイルのパスが指定されていない場合、PDFファイルの拡張子をxlsxに変更したものとする
+if (-not $excelFilePath) {
+    $excelFilePath = [System.IO.Path]::ChangeExtension($pdfFilePath, ".xlsx")
+}
 
 if (-not (Test-Path $pdfFilePath)) {
     Write-Error "The specified PDF file does not exist: $pdfFilePath"
@@ -75,6 +80,7 @@ foreach ($id in $idColumnValues) {
 }
 
 # フィルタリングされたTable IDを一行に表示
+# この表示は必要なので削除しないこと。
 Write-Output "Filtered Table Ids: $($tableIds -join ' ')"
 
 # クエリテーブルを削除
