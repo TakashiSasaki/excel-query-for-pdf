@@ -3,6 +3,14 @@ param (
     [string]$pdfFileName
 )
 
+# PowerShellのバージョン情報を表示
+Write-Output "PowerShell Version: $($PSVersionTable.PSVersion)"
+if ($env:PROCESSOR_ARCHITECTURE -eq 'AMD64') {
+    Write-Output "PowerShell is running in 64-bit mode."
+} else {
+    Write-Output "PowerShell is running in 32-bit mode."
+}
+
 if (-not $pdfFileName) {
     Write-Error "Please provide the PDF file name as an argument."
     exit
