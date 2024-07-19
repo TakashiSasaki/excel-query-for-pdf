@@ -9,11 +9,14 @@ $urls = @(
     "https://raw.githubusercontent.com/thoqbk/traprange/master/_Docs/sample-5.pdf"
 )
 
+# スクリプトのディレクトリを取得
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+
 # ExtractTablesFromPdf.ps1 の絶対パスを取得
-$scriptPath = (Resolve-Path -Path "ExtractTablesFromPdf.ps1").Path
+$extractScriptPath = Join-Path -Path $scriptDir -ChildPath "ExtractTablesFromPdf.ps1"
 
 # ダウンロードディレクトリの設定
-$downloadDir = "DownloadedPdfs"
+$downloadDir = Join-Path -Path $scriptDir -ChildPath "DownloadedPdfs"
 if (-not (Test-Path $downloadDir)) {
     New-Item -ItemType Directory -Path $downloadDir | Out-Null
 }
@@ -27,6 +30,6 @@ foreach ($url in $urls) {
 
     # PDFをExcelに変換
     $excelOutputPath = [System.IO.Path]::ChangeExtension($outputPath, ".xlsx")
-    & $scriptPath -pdfFileName $outputPath -excelFilePath $excelOutputPath
+    & $extractScriptPath -pdfFileName $outputPath -excelFilePath $excelOutputPath
     Write-Output "Converted $fileName to $excelOutputPath"
 }
